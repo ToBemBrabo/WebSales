@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebSales.Data;
+using WebSales.Services;
 
 namespace WebSales
 {
@@ -39,14 +40,20 @@ namespace WebSales
             services.AddDbContext<WebSalesContext>(options =>
                     options.UseMySql(Configuration.GetConnectionString("WebSalesContext"),
                     builder => builder.MigrationsAssembly("WebSales")));
+
+            services.AddScoped<DepartmentService>();
+            services.AddScoped<SeedingService>();
+            services.AddScoped<SellerService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                seedingService.Seed();
             } else
             {
                 app.UseExceptionHandler("/Home/Error");
